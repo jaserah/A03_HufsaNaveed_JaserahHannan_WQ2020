@@ -3,8 +3,8 @@
 //
 // Application Name     - int_sw
 // Application Overview - The objective of this application is to demonstrate
-//							GPIO interrupts using SW2 and SW3.
-//							NOTE: the switches are not debounced!
+//                          GPIO interrupts using SW2 and SW3.
+//                          NOTE: the switches are not debounced!
 //
 //*****************************************************************************
 
@@ -17,6 +17,7 @@
 
 // Standard includes
 #include <stdio.h>
+#include <string.h>
 
 // Driverlib includes
 #include "hw_types.h"
@@ -34,6 +35,8 @@
 
 // Common interface includes
 #include "uart_if.h"
+#include "timer_if.h"
+#include "timer.h"
 
 #include "pin_mux_config.h"
 
@@ -47,6 +50,10 @@ volatile unsigned long SW2_intcount;
 volatile unsigned long SW3_intcount;
 volatile unsigned char SW2_intflag;
 volatile unsigned char SW3_intflag;
+
+volatile long time;
+volatile long oldTime;
+char array[100];
 
 //*****************************************************************************
 //                 GLOBAL VARIABLES -- End
@@ -72,18 +79,42 @@ static void GPIOA1IntHandler(void) { // SW3 handler
     unsigned long ulStatus;
 
     ulStatus = MAP_GPIOIntStatus (GPIOA1_BASE, true);
-    MAP_GPIOIntClear(GPIOA1_BASE, ulStatus);		// clear interrupts on GPIOA1
+    MAP_GPIOIntClear(GPIOA1_BASE, ulStatus);        // clear interrupts on GPIOA1
     SW3_intcount++;
     SW3_intflag=1;
 }
 
 
 
-static void GPIOA2IntHandler(void) {	// SW2 handler
-	unsigned long ulStatus;
-
+static void GPIOA2IntHandler(void) {    // SW2 handler
+    unsigned long ulStatus;
+    int time;
     ulStatus = MAP_GPIOIntStatus (switch2.port, true);
-    MAP_GPIOIntClear(switch2.port, ulStatus);		// clear interrupts on GPIOA2
+    MAP_GPIOIntClear(switch2.port, ulStatus);       // clear interrupts on GPIOA2
+    MAP_TimerDisable(TIMERA0_BASE, TIMER_A);
+    time = Timer_IF_GetCount(TIMERA0_BASE, TIMER_A);
+    time = time - oldTime;
+    oldTime = time;
+    MAP_TimerEnable(TIMERA0_BASE, TIMER_A);
+
+    MAP_GPIOIntDisable(switch2.port, switch2.pin);
+
+
+   if (time < 0){
+        time = time + 500000;
+        if (time < 100000){
+                    array[SW2_intcount] = '0';
+                } else {
+                    array[SW2_intcount] = '1';
+                }
+   } else {
+       if (time < 100000){
+                           array[SW2_intcount] = '0';
+                       } else {
+                           array[SW2_intcount] = '1';
+                       }
+    }
+
     SW2_intcount++;
     SW2_intflag=1;
 }
@@ -98,7 +129,7 @@ static void GPIOA2IntHandler(void) {	// SW2 handler
 //*****************************************************************************
 static void
 BoardInit(void) {
-	MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
+    MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
     
     // Enable Processor
     //
@@ -107,6 +138,7 @@ BoardInit(void) {
 
     PRCMCC3200MCUInit();
 }
+
 //****************************************************************************
 //
 //! Main function
@@ -118,7 +150,7 @@ BoardInit(void) {
 //
 //****************************************************************************
 int main() {
-	unsigned long ulStatus;
+    unsigned long ulStatus;
 
     BoardInit();
     
@@ -137,41 +169,43 @@ int main() {
     //
     // Configure rising edge interrupts on SW2 and SW3
     //
-    MAP_GPIOIntTypeSet(GPIOA1_BASE, 0x20, GPIO_RISING_EDGE);	// SW3
-    MAP_GPIOIntTypeSet(switch2.port, switch2.pin, GPIO_RISING_EDGE);	// SW2
+    MAP_GPIOIntTypeSet(GPIOA1_BASE, 0x20, GPIO_RISING_EDGE);    // SW3
+    MAP_GPIOIntTypeSet(switch2.port, switch2.pin, GPIO_RISING_EDGE);    // SW2
 
     ulStatus = MAP_GPIOIntStatus (GPIOA1_BASE, false);
-    MAP_GPIOIntClear(GPIOA1_BASE, ulStatus);			// clear interrupts on GPIOA1
+    MAP_GPIOIntClear(GPIOA1_BASE, ulStatus);            // clear interrupts on GPIOA1
     ulStatus = MAP_GPIOIntStatus (switch2.port, false);
-    MAP_GPIOIntClear(switch2.port, ulStatus);			// clear interrupts on GPIOA2
+    MAP_GPIOIntClear(switch2.port, ulStatus);           // clear interrupts on GPIOA2
 
     // clear global variables
     SW2_intcount=0;
     SW3_intcount=0;
     SW2_intflag=0;
     SW3_intflag=0;
+    time = 0;
+    oldTime = -5000000;
+
 
     // Enable SW2 and SW3 interrupts
     MAP_GPIOIntEnable(GPIOA1_BASE, 0x20);
     MAP_GPIOIntEnable(switch2.port, switch2.pin);
 
-
     Message("\t\t****************************************************\n\r");
     Message("\t\t\tPush SW3 or SW2 to generate an interrupt\n\r");
     Message("\t\t ****************************************************\n\r");
     Message("\n\n\n\r");
-	Report("SW2 ints = %d\tSW3 ints = %d\r\n",SW2_intcount,SW3_intcount);
+
 
     while (1) {
-    	while ((SW2_intflag==0) && (SW3_intflag==0)) {;}
-    	if (SW2_intflag) {
-    		SW2_intflag=0;	// clear flag
-    		Report("SW2 ints = %d\tSW3 ints = %d\r\n",SW2_intcount,SW3_intcount);
-    	}
-    	if (SW3_intflag) {
-    		SW3_intflag=0;	// clear flag
-    		Report("SW2 ints = %d\tSW3 ints = %d\r\n",SW2_intcount,SW3_intcount);
-    	}
+        while ((SW2_intflag==0) && (SW3_intflag==0)) {;}
+        if (SW2_intflag) {
+            SW2_intflag=0;  // clear flag
+            Report("SW2 ints = %d\tSW3 ints = %d\r\n",SW2_intcount,SW3_intcount);
+        }
+        if (SW3_intflag) {
+            SW3_intflag=0;  // clear flag
+            Report("SW2 ints = %d\tSW3 ints = %d\r\n",SW2_intcount,SW3_intcount);
+        }
     }
 }
 
