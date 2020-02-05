@@ -36,8 +36,8 @@
 //
 //*****************************************************************************
 
-// This file was automatically generated on 4/12/2016 at 4:33:38 PM
-// by TI PinMux version 
+// This file was automatically generated on 4/24/2019 at 7:03:21 PM
+// by TI PinMux version 4.0.1530
 //
 //*****************************************************************************
 
@@ -64,25 +64,24 @@ void PinMuxConfig(void)
     PinModeSet(PIN_06, PIN_MODE_0);
     PinModeSet(PIN_07, PIN_MODE_0);
     PinModeSet(PIN_08, PIN_MODE_0);
-    PinModeSet(PIN_18, PIN_MODE_0);
-    PinModeSet(PIN_21, PIN_MODE_0);
     PinModeSet(PIN_45, PIN_MODE_0);
     PinModeSet(PIN_50, PIN_MODE_0);
     PinModeSet(PIN_52, PIN_MODE_0);
     PinModeSet(PIN_53, PIN_MODE_0);
     PinModeSet(PIN_58, PIN_MODE_0);
     PinModeSet(PIN_59, PIN_MODE_0);
-    PinModeSet(PIN_60, PIN_MODE_0);
     PinModeSet(PIN_61, PIN_MODE_0);
     PinModeSet(PIN_62, PIN_MODE_0);
     PinModeSet(PIN_63, PIN_MODE_0);
     PinModeSet(PIN_64, PIN_MODE_0);
+    PinModeSet(PIN_18, PIN_MODE_0);
     
     //
     // Enable Peripheral Clocks 
     //
     PRCMPeripheralClkEnable(PRCM_GPIOA1, PRCM_RUN_MODE_CLK);
     PRCMPeripheralClkEnable(PRCM_GPIOA2, PRCM_RUN_MODE_CLK);
+    PRCMPeripheralClkEnable(PRCM_GPIOA3, PRCM_RUN_MODE_CLK);
     PRCMPeripheralClkEnable(PRCM_UARTA0, PRCM_RUN_MODE_CLK);
 
     //
@@ -96,6 +95,18 @@ void PinMuxConfig(void)
     //
     PinTypeGPIO(PIN_15, PIN_MODE_0, false);
     GPIODirModeSet(GPIOA2_BASE, 0x40, GPIO_DIR_MODE_IN);
+
+    //
+    // Configure PIN_21 for GPIO Input
+    //
+    PinTypeGPIO(PIN_21, PIN_MODE_0, false);
+    GPIODirModeSet(GPIOA3_BASE, 0x2, GPIO_DIR_MODE_IN);
+
+    //
+       // Configure PIN_60 for GPIO Input
+       //
+       PinTypeGPIO(PIN_60, PIN_MODE_0, false);
+       GPIODirModeSet(GPIOA0_BASE, 0x20, GPIO_DIR_MODE_IN);
 
     //
     // Configure PIN_55 for UART0 UART0_TX
