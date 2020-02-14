@@ -59,8 +59,6 @@
 
 #include <stdio.h>
 
-//a9lgxlhq782eb-ats.iot.us-west-2.amazonaws.com
-
 // Simplelink includes
 #include "simplelink.h"
 
@@ -85,7 +83,7 @@
 
 
 #define APPLICATION_NAME        "SSL"
-#define APPLICATION_VERSION     "1.1.1.EEC.Spring2018"
+#define APPLICATION_VERSION     "1.1.1.EEC.Winter2020"
 #define SERVER_NAME             "a9lgxlhq782eb-ats.iot.us-west-2.amazonaws.com"
 #define GOOGLE_DST_PORT         8443
 
@@ -95,22 +93,27 @@
 
 
 //NEED TO UPDATE THIS FOR IT TO WORK!
-#define DATE                10    /* Current Date */
+#define DATE                14    /* Current Date */
 #define MONTH               2     /* Month 1-12 */
 #define YEAR                2020  /* Current year */
-#define HOUR                9    /* Time - hours */
-#define MINUTE              53    /* Time - minutes */
+#define HOUR                13    /* Time - hours */
+#define MINUTE              0    /* Time - minutes */
 #define SECOND              0     /* Time - seconds */
+
+
+//a9lgxlhq782eb-ats.iot.us-west-2.amazonaws.com
+
 
 #define POSTHEADER "POST /things/Hufsa_CC3200/shadow HTTP/1.1\n\r"
 #define HOSTHEADER "Host: a9lgxlhq782eb-ats.iot.us-west-2.amazonaws.com\r\n"
 #define CHEADER "Connection: Keep-Alive\r\n"
 #define CTHEADER "Content-Type: application/json; charset=utf-8\r\n"
-#define CLHEADER1 "Content-Length: 30"
+#define CLHEADER1 "Content-Length: "
 #define CLHEADER2 "\r\n\r\n"
 
-//"var\" : \"Hello phone, message from CC3200 via AWS IoT!\"\r\n
-#define DATA1 "{\"state\": {\r\n\"desired\" : {\r\n\"var\" : \"Hello phone, message from CC3200 via AWS IoT!\"\r\n}}}\r\n\r\n"
+//OG INSIDE DATA1
+//"{\"state\": {\r\n\"desired\" : {\r\n\"color\" : \"green\"\r\n}}}\r\n\r\n"
+#define DATA1 "{\"state\": {\r\n\"desired\" : {\r\n\"color\" : \"green\"\r\n}}}\r\n\r\n"
 
 // Application specific status/error codes
 typedef enum{
