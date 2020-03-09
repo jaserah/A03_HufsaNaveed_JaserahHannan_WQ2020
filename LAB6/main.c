@@ -98,7 +98,7 @@
 #define OSI_STACK_SIZE          3000
 
 #define PREFIX_BUFFER   "GET /data/2.5/weather?id="
-#define POST_BUFFER     "&mode=xml&units=imperial&APPID=<API KEY> HTTP/1.1\r\nHost:api.openweathermap.org\r\nAccept: */"
+#define POST_BUFFER     "&mode=xml&units=imperial&APPID=7a48421883415d4b1e970e7a661dbc21 HTTP/1.1\r\nHost:api.openweathermap.org\r\nAccept: */"
 
 #define HOST_NAME       "api.openweathermap.org"
 #define HOST_PORT       (80)
